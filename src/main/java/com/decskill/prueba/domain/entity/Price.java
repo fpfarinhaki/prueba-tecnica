@@ -21,12 +21,13 @@ public class Price {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer priceList;
     private Integer priority;
-    private Integer brandId;
     private Timestamp startDate;
     private Timestamp endDate;
     private Money price;
     @ManyToOne
     private Product product;
+    @ManyToOne
+    private Brand brand;
 
     public BigDecimal getFinalPrice() {
         return price.getAmount();

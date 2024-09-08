@@ -1,5 +1,6 @@
 package com.decskill.prueba.ports.input;
 
+import com.decskill.prueba.domain.entity.Brand;
 import com.decskill.prueba.domain.entity.Price;
 import com.decskill.prueba.domain.entity.Product;
 import com.decskill.prueba.domain.event.RequestPriceCommand;
@@ -30,8 +31,8 @@ import static org.mockito.Mockito.*;
 
 class PriceServiceTest {
 
-    private static final int PRODUCT_ID = 12345;
-    private static final int BRAND_ID = 5;
+    private static final int PRODUCT_ID = 1;
+    private static final int BRAND_ID = 1;
     private static final int PRICE_LIST = 1;
     private static final String APPLICATION_DATE = "2023-12-22 10:15:30";
     @Mock
@@ -42,14 +43,16 @@ class PriceServiceTest {
 
     private Price price1;
     private Product product;
+    private Brand brand;
     private RequestPriceCommand command;
 
     @BeforeEach
     void setUp() throws ParseException {
         MockitoAnnotations.openMocks(this);
-        product = new Product(PRODUCT_ID, "product1", Sets.newLinkedHashSet());
+        brand = new Brand(BRAND_ID, "Zara", Sets.set(price1));
+        product = new Product(PRODUCT_ID, "product1", Sets.set(price1));
         price1 = Price.builder()
-                .priceList(PRICE_LIST).priority(1).product(product).brandId(BRAND_ID)
+                .priceList(PRICE_LIST).priority(1).product(product).brand(brand)
                 .price(new Money(new BigDecimal("25.45"), Currency.getInstance("EUR")))
                 .startDate(Timestamp.from(Instant.parse("2023-12-01T00:00:00.00Z")))
                 .endDate(Timestamp.from(Instant.parse("2023-12-31T23:59:59.00Z")))
@@ -60,7 +63,9 @@ class PriceServiceTest {
     @Test
     void findFinalPrice_returnsPriceWithHighestPriority() {
         Price price2 = Price.builder()
-                .priceList(2).priority(0).product(price1.getProduct()).brandId(BRAND_ID).price(new Money(new BigDecimal("30.50"), Currency.getInstance("EUR")))
+                .priceList(2).priority(0).product(price1.getProduct())
+                .brand(brand)
+                .price(new Money(new BigDecimal("30.50"), Currency.getInstance("EUR")))
                 .startDate(Timestamp.from(Instant.parse("2023-12-21T00:00:00.00Z")))
                 .endDate(Timestamp.from(Instant.parse("2023-12-23T23:59:59.00Z")))
                 .build();
@@ -99,7 +104,7 @@ class PriceServiceTest {
         verify(priceRepository).findInRange(PRODUCT_ID, BRAND_ID, command.applicationDate());
         assertEquals(price1.getFinalPrice().doubleValue(), response.finalPrice());
         assertEquals(price1.getProduct().getId(), response.productId());
-        assertEquals(price1.getBrandId(), response.brandId());
+        assertEquals(price1.getBrand().getId(), response.brandId());
         assertEquals(price1.getPriceList(), response.priceList());
         assertEquals(APPLICATION_DATE, response.applicationDate());
     }

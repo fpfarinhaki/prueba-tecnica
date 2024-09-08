@@ -27,7 +27,7 @@ public class PriceService {
         Optional<Price> finalPriceOptional = inRange.stream().max(Comparator.comparingInt(Price::getPriority));
         return finalPriceOptional.map(price -> new RequestPriceResponse(
                 price.getProduct().getId(),
-                price.getBrandId(),
+                price.getBrand().getId(),
                 price.getPriceList(),
                 format(command.applicationDate(), Constants.DATE_FORMAT_PATTERN),
                 price.getFinalPrice().doubleValue()

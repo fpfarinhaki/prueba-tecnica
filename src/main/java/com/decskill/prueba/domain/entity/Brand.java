@@ -13,14 +13,14 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "products")
-public class Product {
+@Table(name = "brands")
+public class Brand {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     private String name;
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "brand")
     private Set<Price> prices;
 
 }
