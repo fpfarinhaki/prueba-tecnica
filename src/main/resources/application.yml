@@ -1,1 +1,14 @@
-spring.application.name=Prueba Practica
+server:
+  port: 8080
+
+spring:
+  jpa:
+    show-sql: true
+    open-in-view: false
+    h2:
+      console:
+        enabled: true
+    datasource:
+      url: jdbc:h2:mem:testdb
+      username: sa
+      password: password
