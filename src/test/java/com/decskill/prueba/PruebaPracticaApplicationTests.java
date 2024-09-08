@@ -17,6 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 class PruebaPracticaApplicationTests {
+	private static final String FINAL_PRICE_ENDPOINT = "/prices/final-price";
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -32,12 +33,21 @@ class PruebaPracticaApplicationTests {
 	void testFindFinalPriceResponse(Integer productId, Integer brandId,String applicationDate, Integer expectedPriceList, Double expectedFinalPrice) throws Exception {
 		RequestPriceResponse response = new RequestPriceResponse(productId, brandId, expectedPriceList, applicationDate, expectedFinalPrice);
 		String expectedJson = Json.mapper().writeValueAsString(response);
-		this.mockMvc.perform(get("/price")
+		this.mockMvc.perform(get(FINAL_PRICE_ENDPOINT)
 				.param("productId", String.valueOf(productId))
 				.param("brandId", String.valueOf(brandId))
 				.param("applicationDate", applicationDate))
 				.andExpect(status().isOk())
 				.andExpect(content().json(expectedJson));
+	}
+
+	@Test
+	void shouldReturnNotFoundResponse() throws Exception {
+		this.mockMvc.perform(get(FINAL_PRICE_ENDPOINT)
+						.param("productId", String.valueOf(0))
+						.param("brandId", String.valueOf(2))
+						.param("applicationDate", "2025-06-14 10:00:00"))
+				.andExpect(status().isNotFound());
 	}
 
 }
