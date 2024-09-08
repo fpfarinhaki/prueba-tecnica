@@ -16,7 +16,7 @@ import java.util.Date;
 
 @Slf4j
 @RestController
-@RequestMapping("/price")
+@RequestMapping("/prices")
 public class PriceController {
     private final PriceService priceService;
 
@@ -24,7 +24,7 @@ public class PriceController {
         this.priceService = priceService;
     }
 
-    @GetMapping(produces = "application/json")
+    @GetMapping(value = "/final-price", produces = "application/json")
     public ResponseEntity<RequestPriceResponse> findFinalPrice(@RequestParam Integer productId,
                                                                @RequestParam Integer brandId,
                                                                @RequestParam @DateTimeFormat(pattern = Constants.DATE_FORMAT_PATTERN) Date applicationDate) {
