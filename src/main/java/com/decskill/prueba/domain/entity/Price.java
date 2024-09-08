@@ -11,8 +11,8 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Entity
 @Table(name = "prices")
@@ -21,11 +21,12 @@ public class Price {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer priceList;
     private Integer priority;
-    private Integer productId;
     private Integer brandId;
     private Timestamp startDate;
-    private  Timestamp endDate;
+    private Timestamp endDate;
     private Money price;
+    @ManyToOne
+    private Product product;
 
     public BigDecimal getFinalPrice() {
         return price.getAmount();

@@ -1,12 +1,14 @@
 package com.decskill.prueba.ports.input;
 
 import com.decskill.prueba.domain.entity.Price;
+import com.decskill.prueba.domain.entity.Product;
 import com.decskill.prueba.domain.event.RequestPriceCommand;
 import com.decskill.prueba.domain.event.RequestPriceResponse;
 import com.decskill.prueba.domain.valueobject.Money;
 import com.decskill.prueba.exception.PriceNotFoundException;
 import com.decskill.prueba.ports.output.repository.PriceRepository;
 import org.apache.commons.lang3.time.DateUtils;
+import org.assertj.core.util.Sets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -39,13 +41,15 @@ class PriceServiceTest {
     private PriceService priceService;
 
     private Price price1;
+    private Product product;
     private RequestPriceCommand command;
 
     @BeforeEach
     void setUp() throws ParseException {
         MockitoAnnotations.openMocks(this);
+        product = new Product(PRODUCT_ID, "product1", Sets.newLinkedHashSet());
         price1 = Price.builder()
-                .priceList(PRICE_LIST).priority(1).productId(PRODUCT_ID).brandId(BRAND_ID)
+                .priceList(PRICE_LIST).priority(1).product(product).brandId(BRAND_ID)
                 .price(new Money(new BigDecimal("25.45"), Currency.getInstance("EUR")))
                 .startDate(Timestamp.from(Instant.parse("2023-12-01T00:00:00.00Z")))
                 .endDate(Timestamp.from(Instant.parse("2023-12-31T23:59:59.00Z")))
@@ -56,10 +60,11 @@ class PriceServiceTest {
     @Test
     void findFinalPrice_returnsPriceWithHighestPriority() {
         Price price2 = Price.builder()
-                .priceList(2).priority(0).productId(PRODUCT_ID).brandId(BRAND_ID).price(new Money(new BigDecimal("30.50"), Currency.getInstance("EUR")))
+                .priceList(2).priority(0).product(price1.getProduct()).brandId(BRAND_ID).price(new Money(new BigDecimal("30.50"), Currency.getInstance("EUR")))
                 .startDate(Timestamp.from(Instant.parse("2023-12-21T00:00:00.00Z")))
                 .endDate(Timestamp.from(Instant.parse("2023-12-23T23:59:59.00Z")))
                 .build();
+        product.getPrices().add(price2);
 
         List<Price> prices = Arrays.asList(price1, price2);
 
@@ -93,7 +98,7 @@ class PriceServiceTest {
     private void assertResponse(RequestPriceResponse response) {
         verify(priceRepository).findInRange(PRODUCT_ID, BRAND_ID, command.applicationDate());
         assertEquals(price1.getFinalPrice().doubleValue(), response.finalPrice());
-        assertEquals(price1.getProductId(), response.productId());
+        assertEquals(price1.getProduct().getId(), response.productId());
         assertEquals(price1.getBrandId(), response.brandId());
         assertEquals(price1.getPriceList(), response.priceList());
         assertEquals(APPLICATION_DATE, response.applicationDate());

@@ -26,7 +26,7 @@ public class PriceService {
         List<Price> inRange = priceRepository.findInRange(command.productId(), command.brandId(), command.applicationDate());
         Optional<Price> finalPriceOptional = inRange.stream().max(Comparator.comparingInt(Price::getPriority));
         return finalPriceOptional.map(price -> new RequestPriceResponse(
-                price.getProductId(),
+                price.getProduct().getId(),
                 price.getBrandId(),
                 price.getPriceList(),
                 format(command.applicationDate(), Constants.DATE_FORMAT_PATTERN),
