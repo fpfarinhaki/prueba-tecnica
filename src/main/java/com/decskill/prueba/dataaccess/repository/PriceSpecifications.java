@@ -7,11 +7,11 @@ import java.util.Date;
 
 public class PriceSpecifications {
     public static Specification<Price> byProductId(Integer productId) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("productId"), productId);
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("product").get("id"), productId);
     }
 
     public static Specification<Price> byBrandId(Integer brandId) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("brandId"), brandId);
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("brand").get("id"), brandId);
     }
 
     public static Specification<Price> inRange(Date applicationDate) {
